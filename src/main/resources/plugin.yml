@@ -1,0 +1,13 @@
+name: Terraingen
+version: '${project.version}'
+main: cz.xrosecky.terraingen.Terraingen
+api-version: 1.18
+commands:
+  goto:
+    description: Teleport to the given coordinates
+    usage: /goto lat lon
+    permission: terraingen.goto
+  whereami:
+    description: Tell the current location of the player in the real world coordinates
+    usage: /whereami
+    permission: terraingen.whereami
