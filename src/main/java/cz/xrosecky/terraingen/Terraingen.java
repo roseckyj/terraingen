@@ -3,18 +3,21 @@ package cz.xrosecky.terraingen;
 import cz.xrosecky.terraingen.commands.GotoCommand;
 import cz.xrosecky.terraingen.commands.WhereAmICommand;
 import cz.xrosecky.terraingen.data.DataStorage;
-import cz.xrosecky.terraingen.data.loader.LightLoader;
-import cz.xrosecky.terraingen.data.loader.StreetLoader;
-import cz.xrosecky.terraingen.data.loader.TerrainLoader;
-import cz.xrosecky.terraingen.data.loader.TreeLoader;
 import cz.xrosecky.terraingen.generator.ChunkGen;
+import cz.xrosecky.terraingen.settings.ConfigManager;
+import cz.xrosecky.terraingen.settings.Configuration;
+import cz.xrosecky.terraingen.utils.StaticDB;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.DriverManager;
 
+
+@SuppressWarnings("unused")
 public final class Terraingen extends JavaPlugin {
-    private final DataStorage storage = new DataStorage();
+    private DataStorage storage;
+    private java.sql.Connection conn;
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(@NotNull String worldName, String id) {
@@ -23,36 +26,36 @@ public final class Terraingen extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getCommand("goto").setExecutor(new GotoCommand(this, storage));
-        this.getCommand("whereami").setExecutor(new WhereAmICommand(this, storage));
+        ConfigManager configManager = new ConfigManager(this);
 
-        this.getLogger().info("Source loading started");
+        try {
+            this.getCommand("goto").setExecutor(new GotoCommand(this, storage));
+            this.getCommand("whereami").setExecutor(new WhereAmICommand(this, storage));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
-        this.getLogger().info("> Loading terrain...");
-        TerrainLoader terrainLoader = new TerrainLoader(storage, this);
-        int loadedTerrainPoints = terrainLoader.load("plugins/terraingen/terrain");
-        this.getLogger().info("> Loaded " + loadedTerrainPoints + " terrain points");
+        Configuration config = configManager.getConfiguration();
 
-        this.getLogger().info("> Loading trees...");
-        TreeLoader treeLoader = new TreeLoader(storage, this);
-        int loadedTrees = treeLoader.load("plugins/terraingen/tree.geojson");
-        this.getLogger().info("> Loaded " + loadedTrees + " trees");
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://" + config.getDBHost() + ":" + config.getDBPort() + "/" + config.getDBDatabase();
+            conn = DriverManager.getConnection(url, config.getDBUser(), config.getDBPassword());
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
 
-        this.getLogger().info("> Loading streets...");
-        StreetLoader streetLoader = new StreetLoader(storage, this);
-        int loadedStreets = streetLoader.load("plugins/terraingen/street.geojson");
-        this.getLogger().info("> Loaded " + loadedStreets + " streets");
-
-        this.getLogger().info("> Loading lights...");
-        LightLoader lightLoader = new LightLoader(storage, this);
-        int loadedLights = lightLoader.load("plugins/terraingen/light.geojson");
-        this.getLogger().info("> Loaded " + loadedLights + " lights");
-
-        this.getLogger().info("Source loading completed");
+        this.storage = new DataStorage(this, conn);
     }
 
     @Override
     public void onDisable() {
         this.getServer().getScheduler().cancelTasks(this);
+
+//        try {
+//            conn.close();
+//        } catch( Exception e ) {
+//            e.printStackTrace();
+//        }
     }
 }

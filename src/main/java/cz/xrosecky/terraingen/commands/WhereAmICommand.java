@@ -28,7 +28,7 @@ public class WhereAmICommand implements CommandExecutor {
             Player player = (Player) sender;
 
             Location loc = player.getLocation();
-            Pointf2D latlon = Coords.XZToLatLon(loc.getX(), -loc.getZ());
+            Pointf2D latlon = Coords.XZToLatLon(loc.getX(), loc.getZ());
 
             String lat = String.format(Locale.ROOT, "%.8f", latlon.lat());
             String lon = String.format(Locale.ROOT, "%.8f", latlon.lon());

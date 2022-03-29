@@ -2,14 +2,10 @@ package cz.xrosecky.terraingen.generator;
 
 import cz.xrosecky.terraingen.data.DataStorage;
 import cz.xrosecky.terraingen.generator.annotations.ChunkGenInfo;
-import cz.xrosecky.terraingen.generator.populators.LightPopulator;
-import cz.xrosecky.terraingen.generator.populators.StreetPopulator;
-import cz.xrosecky.terraingen.generator.populators.TreePopulator;
+import cz.xrosecky.terraingen.generator.populators.*;
 import cz.xrosecky.terraingen.generator.utils.SingleBiomeProvider;
-import cz.xrosecky.terraingen.utils.Coords;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeType;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.*;
@@ -29,6 +25,8 @@ public class ChunkGen extends ChunkGenerator {
         this.populators.add(new TreePopulator(javaPlugin, storage));
         this.populators.add(new StreetPopulator(javaPlugin, storage));
         this.populators.add(new LightPopulator(javaPlugin, storage));
+        this.populators.add(new BuildingDemoPopulator(javaPlugin, storage));
+        this.populators.add(new DecorationsPopulator(javaPlugin, storage));
     }
 
     private final JavaPlugin javaPlugin;
@@ -85,7 +83,9 @@ public class ChunkGen extends ChunkGenerator {
     public void generateBedrock(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, ChunkData chunkData) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunkData.setBlock(x, worldInfo.getMinHeight(), z, Material.BEDROCK);
+                if (chunkData.getType(x, worldInfo.getMinHeight(), z) != Material.AIR) {
+                    chunkData.setBlock(x, worldInfo.getMinHeight(), z, Material.BEDROCK);
+                }
             }
         }
     }
@@ -95,19 +95,21 @@ public class ChunkGen extends ChunkGenerator {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 int normalized = storage.getChunk(chunkX, chunkZ).getAlt(x + chunkX * 16, z + chunkZ * 16);
-                for (int y = worldInfo.getMinHeight(); y <= normalized; y++) {
-                    int relative = normalized - y;
+                if (normalized != 0) {
+                    for (int y = worldInfo.getMinHeight(); y <= normalized; y++) {
+                        int relative = normalized - y;
 
-                    if (relative == 0) chunkData.setBlock(x, y, z, Material.GRASS_BLOCK);
-                    else if (relative <= 2) chunkData.setBlock(x, y, z, Material.DIRT);
-                    else chunkData.setBlock(x, y, z, Material.STONE);
+                        if (relative == 0) chunkData.setBlock(x, y, z, Material.GRASS_BLOCK);
+                        else if (relative <= 2) chunkData.setBlock(x, y, z, Material.DIRT);
+                        else chunkData.setBlock(x, y, z, Material.STONE);
+                    }
                 }
             }
         }
     }
 
     @Override
-    public List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
+    public @NotNull List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
         return this.populators;
     }
 }

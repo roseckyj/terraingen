@@ -16,4 +16,13 @@ public class Pointf2D {
     public double lon() {
         return z;
     }
+
+    @Override
+    public String toString() {
+        return x + " " + z;
+    }
+
+    public String toLatLonString() {
+        return z + " " + x;
+    }
 }

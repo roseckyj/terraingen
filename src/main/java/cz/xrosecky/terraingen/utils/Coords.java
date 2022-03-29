@@ -10,7 +10,12 @@ public class Coords {
     public static int normalizeY(double alt) {
         // Check if this is good
         int y = (int)alt;
-        y -= 190;
+        y -= 100;
+        return y;
+    }
+
+    public static double denormalizeY(double y) {
+        y += 100;
         return y;
     }
 
@@ -30,7 +35,18 @@ public class Coords {
         return new Pointf2D(x, z);
     }
 
+    public static Pointf2D latLonToXZ(Pointf2D point) {
+        return latLonToXZ(point.x, point.z);
+    }
+
+    public static Pointf3D latLonToXZ(Pointf3D point) {
+        return new Pointf3D(latLonToXZ(point.x, point.z), normalizeY(point.y));
+    }
+
     public static Pointf2D XZToLatLon(double x, double z) {
+        x *= 1;
+        z *= -1;
+
         double rho = Math.sqrt(x*x + z*z);
         double c = Math.asin(rho / EARTH_RADIUS);
         double cosC = Math.cos(c);
@@ -38,10 +54,18 @@ public class Coords {
         double cosPhi0 = Math.cos(MAP_CENTER.lat());
         double sinPhi0 = Math.sin(MAP_CENTER.lat());
 
-        double lat = Math.asin(cosC * sinPhi0 + (z * sinC * cosPhi0) / rho);
+        double lat = rho == 0 ? MAP_CENTER.lat() : Math.asin(cosC * sinPhi0 + (z * sinC * cosPhi0) / rho);
         double lon = MAP_CENTER.lon() + Math.atan2(x * sinC, rho * cosC * cosPhi0 - z * sinC * sinPhi0);
 
         return new Pointf2D(deg(lat), deg(lon));
+    }
+
+    public static Pointf2D XZToLatLon(Pointf2D point) {
+        return XZToLatLon(point.x, point.z);
+    }
+
+    public static Pointf3D XZToLatLon(Pointf3D point) {
+        return new Pointf3D(XZToLatLon(point.x, point.z), denormalizeY(point.y));
     }
 
     /* Adapted from http://martin.hinner.info/geo/ */
