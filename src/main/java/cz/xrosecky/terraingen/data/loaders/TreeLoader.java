@@ -26,7 +26,7 @@ public class TreeLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom, druh_bio_k FROM trees WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom, druh_bio_k FROM brno_trees WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiPoint geom = (MultiPoint) ((PGgeometry)r.getObject(1)).getGeometry();

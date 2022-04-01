@@ -27,7 +27,7 @@ public class BuildingLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom, bldgheight, eaveheight, baseheight, roofform FROM buildings WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom, bldgheight, eaveheight, baseheight, roofform FROM brno_buildings WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiPolygon geom = (MultiPolygon) ((PGgeometry)r.getObject(1)).getGeometry();

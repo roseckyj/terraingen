@@ -9,7 +9,7 @@ public class Coords {
 
     public static int normalizeY(double alt) {
         // Check if this is good
-        int y = (int)alt;
+        int y = (int)Math.round(alt);
         y -= 100;
         return y;
     }

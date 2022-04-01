@@ -26,7 +26,7 @@ public class LightLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom, typ_sv__mi FROM lights WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom, typ_sv__mi FROM brno_lights WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 String lightType = StringUtils.unaccent(r.getString(2)).toLowerCase(Locale.ROOT);

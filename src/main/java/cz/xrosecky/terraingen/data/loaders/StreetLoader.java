@@ -24,7 +24,7 @@ public class StreetLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom FROM streets WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom FROM brno_streets WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiLineString geom = (MultiLineString) ((PGgeometry)r.getObject(1)).getGeometry();
