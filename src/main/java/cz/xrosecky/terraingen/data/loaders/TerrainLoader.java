@@ -25,7 +25,7 @@ public class TerrainLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom FROM brno_terrain WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom FROM brno_terrain WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiPolygon geom = (MultiPolygon) ((PGgeometry)r.getObject(1)).getGeometry();

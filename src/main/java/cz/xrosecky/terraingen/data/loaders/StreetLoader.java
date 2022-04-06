@@ -2,6 +2,8 @@ package cz.xrosecky.terraingen.data.loaders;
 
 import cz.xrosecky.terraingen.data.DataStorage;
 import cz.xrosecky.terraingen.data.types.LineSegment;
+import cz.xrosecky.terraingen.data.types.StreetSegment;
+import cz.xrosecky.terraingen.data.types.StreetType;
 import cz.xrosecky.terraingen.utils.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.postgis.LineString;
@@ -24,10 +26,14 @@ public class StreetLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom FROM brno_streets WHERE ST_Intersects(geom, %s)", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT geom, code, name, bridge, tunnel FROM osm_roads WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiLineString geom = (MultiLineString) ((PGgeometry)r.getObject(1)).getGeometry();
+                StreetType type = StreetType.fromCode(r.getInt(2));
+                String name = r.getString(3);
+                boolean bridge = r.getString(4).equals("T");
+                boolean tunnel = r.getString(5).equals("T");
 
                 for (int i = 0; i < geom.numLines(); i++) {
                     LineString l = geom.getLine(i);
@@ -45,7 +51,7 @@ public class StreetLoader extends AbstractLoader {
                         long minZ = Math.min(z1, z2);
                         long maxZ = Math.max(z1, z2);
 
-                        LineSegment segment = new LineSegment(x1, z1, x2, z2);
+                        StreetSegment segment = new StreetSegment(x1, z1, x2, z2, type, name, bridge, tunnel);
 
                         for (int x = (int) Math.floor(minX / 16.0); x <= (int) Math.ceil(maxX / 16.0); x++) {
                             for (int z = (int) Math.floor(minZ / 16.0); z <= (int) Math.ceil(maxZ / 16.0); z++) {

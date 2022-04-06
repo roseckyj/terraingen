@@ -1,9 +1,6 @@
 package cz.xrosecky.terraingen.data;
 
-import cz.xrosecky.terraingen.data.types.Building;
-import cz.xrosecky.terraingen.data.types.LineSegment;
-import cz.xrosecky.terraingen.data.types.Point;
-import cz.xrosecky.terraingen.data.types.Tree;
+import cz.xrosecky.terraingen.data.types.*;
 import cz.xrosecky.terraingen.utils.Coords;
 import cz.xrosecky.terraingen.utils.Point2D;
 
@@ -16,7 +13,7 @@ public class DataChunk {
 
     public final ArrayList<Tree> trees = new ArrayList<>();
     public final ArrayList<Point> lights = new ArrayList<>();
-    public final ArrayList<LineSegment> streets = new ArrayList<>();
+    public final ArrayList<StreetSegment> streets = new ArrayList<>();
     public final ArrayList<Building> buildings = new ArrayList<>();
     private final int[][] altitudes = new int[16][16];
 

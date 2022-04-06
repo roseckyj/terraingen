@@ -36,29 +36,31 @@ public class BuildingDemoPopulator extends BlockPopulator {
         DataChunk dataChunk = storage.getChunk(chunkX, chunkZ);
 //        javaPlugin.getLogger().info(dataChunk.buildings.size() + " buildings in chunk " + chunkX + " " + chunkZ);
         for (Building b : dataChunk.buildings) {
-            int minAlt = Integer.MAX_VALUE;
-            int maxAlt = Integer.MIN_VALUE;
+//            int minAlt = Integer.MAX_VALUE;
+//            int maxAlt = Integer.MIN_VALUE;
+//
+//            int minX = Integer.MAX_VALUE;
+//            int maxX = Integer.MIN_VALUE;
+//            int minZ = Integer.MAX_VALUE;
+//            int maxZ = Integer.MIN_VALUE;
+//
+//            for (int pointNum = 0; pointNum < b.polygon.numPoints(); pointNum++) {
+//                Pointf3D pt = Coords.latLonToXZ(new Pointf3D(b.polygon.getPoint(pointNum)));
+//                minX = Math.min(minX, (int)Math.floor(pt.x));
+//                maxX = Math.max(maxX, (int)Math.ceil(pt.x));
+//                minZ = Math.min(minZ, (int)Math.floor(pt.z));
+//                maxZ = Math.max(maxZ, (int)Math.ceil(pt.z));
+//            }
+//
+//            for (int x = minX; x <= maxX; x++) {
+//                for (int z = minZ; z <= maxZ; z++) {
+//                    int alt = storage.getChunk((int)Math.floor(x / 16.0), (int)Math.floor(z / 16.0)).getAlt(x, z);
+//                    minAlt = Math.min(minAlt, alt);
+//                    maxAlt = Math.max(maxAlt, alt);
+//                }
+//            }
 
-            int minX = Integer.MAX_VALUE;
-            int maxX = Integer.MIN_VALUE;
-            int minZ = Integer.MAX_VALUE;
-            int maxZ = Integer.MIN_VALUE;
-
-            for (int pointNum = 0; pointNum < b.polygon.numPoints(); pointNum++) {
-                Pointf3D pt = Coords.latLonToXZ(new Pointf3D(b.polygon.getPoint(pointNum)));
-                minX = Math.min(minX, (int)Math.floor(pt.x));
-                maxX = Math.max(maxX, (int)Math.ceil(pt.x));
-                minZ = Math.min(minZ, (int)Math.floor(pt.z));
-                maxZ = Math.max(maxZ, (int)Math.ceil(pt.z));
-            }
-
-            for (int x = minX; x <= maxX; x++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    int alt = storage.getChunk((int)Math.floor(x / 16.0), (int)Math.floor(z / 16.0)).getAlt(x, z);
-                    minAlt = Math.min(minAlt, alt);
-                    maxAlt = Math.max(maxAlt, alt);
-                }
-            }
+            int minAlt = (int)Math.floor(Coords.normalizeY(b.alt));
 
             for (int polyNum = 0; polyNum < b.polygon.numPolygons(); polyNum++) {
                 Polygon poly = b.polygon.getPolygon(polyNum);
