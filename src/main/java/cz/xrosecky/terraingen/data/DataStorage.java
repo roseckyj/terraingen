@@ -23,7 +23,8 @@ public class DataStorage {
                 new TreeLoader(plugin, this, conn),
                 new LightLoader(plugin, this, conn),
                 new StreetLoader(plugin, this, conn),
-                new BuildingLoader(plugin, this, conn)
+                new BuildingLoader(plugin, this, conn),
+                new SpatialStatsLoader(plugin, this, conn)
         };
     }
 

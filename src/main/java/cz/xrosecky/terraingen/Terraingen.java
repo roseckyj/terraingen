@@ -19,6 +19,7 @@ import java.sql.SQLException;
 public final class Terraingen extends JavaPlugin {
     private DataStorage storage;
     private java.sql.Connection conn;
+    private Loop looper;
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(@NotNull String worldName, String id) {
@@ -29,13 +30,6 @@ public final class Terraingen extends JavaPlugin {
     public void onEnable() {
         ConfigManager configManager = new ConfigManager(this);
 
-        try {
-            this.getCommand("goto").setExecutor(new GotoCommand(this, storage));
-            this.getCommand("whereami").setExecutor(new WhereAmICommand(this, storage));
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-
         Configuration config = configManager.getConfiguration();
 
         try {
@@ -45,11 +39,19 @@ public final class Terraingen extends JavaPlugin {
 
             this.storage = new DataStorage(this, conn);
 
+            this.getCommand("goto").setExecutor(new GotoCommand(this, storage));
+            this.getCommand("whereami").setExecutor(new WhereAmICommand(this, storage));
+
+            this.looper = new Loop(this, storage);
+            this.getServer().getScheduler().runTaskTimer(this, looper, 0L, 10L);
+
             getLogger().info("Successfully connected to the database");
-        } catch( SQLException e ) {
+        } catch(SQLException e) {
             getLogger().severe("Connection to the database failed! Please check the credentials in configuration.json");
             setEnabled(false);
-        } catch ( Exception e ) {
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

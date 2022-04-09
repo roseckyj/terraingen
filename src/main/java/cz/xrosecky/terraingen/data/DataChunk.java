@@ -15,6 +15,7 @@ public class DataChunk {
     public final ArrayList<Point> lights = new ArrayList<>();
     public final ArrayList<StreetSegment> streets = new ArrayList<>();
     public final ArrayList<Building> buildings = new ArrayList<>();
+    public final HashMap<String, ArrayList<SpatialData>> spatialStats = new HashMap<>();
     private final int[][] altitudes = new int[16][16];
 
     public DataChunk(int x, int z) {
@@ -35,6 +36,15 @@ public class DataChunk {
     }
     public boolean isInChunk(long absX, long absZ) {
         return absX >= (long)x * 16 && absX < ((long)x + 1) * 16 && absZ >= (long)z * 16 && absZ < ((long)z + 1) * 16;
+    }
+
+    public SpatialData getData(String stats, int x, int z) {
+        for (SpatialData d : spatialStats.get(stats)) {
+            if (d.isIn(x, z)) {
+                return d;
+            }
+        }
+        return null;
     }
 
 }
