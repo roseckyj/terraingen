@@ -36,7 +36,7 @@ public class DecorationsPopulator extends BlockPopulator {
                 Location locBellow = new Location(region.getWorld(), x + chunkX * 16, alt - 1, z + chunkZ * 16);
                 Location locAbove = new Location(region.getWorld(), x + chunkX * 16, alt + 1, z + chunkZ * 16);
 
-                if (region.getType(locBellow) != Material.GRASS_BLOCK || region.getType(locAbove) != Material.AIR) {
+                if (region.getType(locBellow) != Material.GRASS_BLOCK || region.getType(loc) != Material.AIR || region.getType(locAbove) != Material.AIR) {
                     continue;
                 }
 

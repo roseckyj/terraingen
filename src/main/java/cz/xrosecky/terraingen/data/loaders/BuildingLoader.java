@@ -27,13 +27,19 @@ public class BuildingLoader extends AbstractLoader {
     public void LoadRegion(Point2D from, Point2D to) {
         try {
             Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(String.format("SELECT geom, bldgheight, eaveheight, baseheight, roofform FROM brno_buildings WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
+            //ResultSet r = s.executeQuery(String.format("SELECT geom, bldgheight, eaveheight, baseheight, roofform FROM brno_buildings WHERE geom && %s", DatabaseUtils.CornersToGeom(from, to)));
+            ResultSet r = s.executeQuery(String.format("SELECT ST_Multi(ST_Union(ST_Force2D(g2))) as g3, bldgheight, eaveheight, baseheight, roofform, geom FROM (" +
+                    "SELECT *, (ST_DumpRings(g1)).geom as g2 FROM (" +
+                    "SELECT *, (ST_Dump(geom)).geom As g1 FROM brno_buildings WHERE geom && %s" +
+                    ") as b" +
+                    ") as c GROUP BY gid, baseheight, bldgheight, eaveheight, roofform, geom", DatabaseUtils.CornersToGeom(from, to)));
 
             while (r.next()) {
                 MultiPolygon geom = (MultiPolygon) ((PGgeometry)r.getObject(1)).getGeometry();
                 float height = r.getFloat(2);
                 float roofHeight = r.getFloat(3);
                 float alt = r.getFloat(4);
+                MultiPolygon origGeom = (MultiPolygon) ((PGgeometry)r.getObject(6)).getGeometry();
 
                 RoofType roofType = RoofType.OTHER;
                 switch(r.getString(5)) {
@@ -90,7 +96,7 @@ public class BuildingLoader extends AbstractLoader {
                         Point2D fetchPoint = new Point2D(x, z);
                         if (new Point2D(x * 16, z * 16).within(from, to)) {
                             DataChunk chunk = storage.chunks.get(fetchPoint);
-                            chunk.buildings.add(new Building(height, alt, roofHeight, roofType, geom));
+                            chunk.buildings.add(new Building(height, alt, roofHeight, roofType, geom, origGeom));
                         }
                     }
                 }

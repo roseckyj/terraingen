@@ -45,4 +45,29 @@ public class Pointf3D {
     public Pointf2D xz() {
         return new Pointf2D(x, z);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof Pointf3D)){
+            return false;
+        }
+
+        Pointf3D other_ = (Pointf3D) other;
+
+        return other_.x - this.x + other_.y - this.y + other_.z - this.z < 0.001;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = (int)Math.floor(prime * result + x * 10000);
+        result = (int)Math.floor(prime * result + y * 10000);
+        result = (int)Math.floor(prime * result + z * 10000);
+        return result;
+    }
 }

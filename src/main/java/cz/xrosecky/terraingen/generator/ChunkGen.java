@@ -25,7 +25,7 @@ public class ChunkGen extends ChunkGenerator {
         this.populators.add(new TreePopulator(javaPlugin, storage));
         this.populators.add(new StreetPopulator(javaPlugin, storage));
         this.populators.add(new LightPopulator(javaPlugin, storage));
-        this.populators.add(new BuildingDemoPopulator(javaPlugin, storage));
+        this.populators.add(new BuildingPopulator(javaPlugin, storage));
         this.populators.add(new DecorationsPopulator(javaPlugin, storage));
     }
 
