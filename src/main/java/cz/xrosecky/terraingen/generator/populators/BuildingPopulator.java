@@ -4,6 +4,8 @@ import cz.xrosecky.terraingen.data.DataChunk;
 import cz.xrosecky.terraingen.data.DataStorage;
 import cz.xrosecky.terraingen.data.types.Building;
 import cz.xrosecky.terraingen.data.types.RoofType;
+import cz.xrosecky.terraingen.generator.populators.materials.MaterialSchemes;
+import cz.xrosecky.terraingen.generator.populators.materials.MaterialType;
 import cz.xrosecky.terraingen.utils.Coords;
 import cz.xrosecky.terraingen.utils.Point2D;
 import cz.xrosecky.terraingen.utils.Pointf2D;
@@ -56,6 +58,19 @@ public class BuildingPopulator extends BlockPopulator {
                 }
             }
 
+            // the minimal floor height => actual is in the interval <floorHeight, 2 * floorHeight)
+            int floorHeight = 4;
+            int floorCount = (int) Math.floor(b.height / floorHeight);
+            int floorRemainder = (int) b.height % floorHeight;
+            // the first floor is taller
+            int firstFloorHeight = floorHeight + floorRemainder;
+            makeFloor(b, chunkX, chunkZ, region, firstFloorHeight, firstFloorHeight, Material.STONE_BRICKS);
+            // other floors are the same height (do not draw ceiling, it is drawn with the roof)
+            for (int floorIndex = 2; floorIndex < floorCount - 1; floorIndex++){
+                int floorY = minAlt + floorIndex * floorHeight;
+                makeFloor(b, chunkX, chunkZ, region, floorY, floorY, Material.STONE_BRICKS);
+            }
+
             for (int j = 0; j < lines.size(); j++) {
                 ArrayList<Pointf2D> points = lines.get(j);
                 for (int i = 0; i < points.size(); i++) {
@@ -80,8 +95,9 @@ public class BuildingPopulator extends BlockPopulator {
                         long currZ = Math.round(z);
 
                         if (dataChunk.isInChunk(currX, currZ)) {
-                            for (int y = minAlt; y <= minAlt + b.height; y++) {
-                                region.setType(new Location(region.getWorld(), currX, y, currZ), Material.STONE_BRICKS);
+                            for (int y = 0; y <= b.height; y++) {
+                                Material m = determineMaterial(k, y, steps, (int) b.height, random);
+                                region.setType(new Location(region.getWorld(), currX, y + minAlt, currZ), m);
                             }
                             if (b.roofType == RoofType.FLAT) {
                                 region.setType(new Location(region.getWorld(), currX, minAlt + b.height + 1, currZ), Material.STONE_BRICKS);
@@ -101,6 +117,53 @@ public class BuildingPopulator extends BlockPopulator {
                 makeRoof(b, region, (int) (minAlt + b.height) + 1, Material.OAK_PLANKS, lines, b.height > 40 ? 4 : b.roofHeight > 8 ? 2 : 1);
             }
         }
+    }
+
+    private Material determineMaterial(long x, int y, long width, int height, @NotNull Random random) {
+        MaterialType type = MaterialType.None;
+
+        int windowSpacing = 1;
+
+        int floorHeight = 4;
+        int floorCount = height / floorHeight;
+        int floorRemainder = height % floorHeight;
+        long currentFloor = y / floorHeight;
+        long indexInFloor = y % floorHeight;
+
+        int regionWidth = 3;
+        int regionBorder = 1;
+        long regionCount = width / regionWidth;
+        long regionRemainder = width % regionWidth;
+        long currentRegion = x / regionWidth;
+        long indexInRegion = x % regionWidth;
+
+        boolean oddRegions = regionCount % 2 == 1;
+        boolean largerRegion = regionRemainder != 0;
+        // in case of the odd number of regions extend the one in the middle, otherwise the first one
+        boolean currentLargerRegion = largerRegion && ((oddRegions && currentRegion == Math.ceil(regionCount / 2.0))
+                || currentRegion == 0);
+
+        // corner
+        if (x == 0 || x == width - 1) {
+            type = MaterialType.Pillar;
+        }
+        // edge regions (and larger region)
+        else if (currentRegion == 0 || currentRegion == regionCount || currentLargerRegion) {
+            type = MaterialType.WallPrimary;
+        }
+        // window
+        else if (currentRegion % (1 + windowSpacing) == windowSpacing &&
+                indexInRegion >= regionBorder && indexInRegion < regionWidth - regionBorder
+                && indexInFloor >= regionBorder && indexInFloor < floorHeight - regionBorder) {
+            type = MaterialType.Window;
+        }
+        else {
+            type = MaterialType.WallSecondary;
+        }
+
+        String[] allSchemes = MaterialSchemes.getSchemes();
+        int rnd = random.nextInt(allSchemes.length);
+        return MaterialSchemes.getMaterial(allSchemes[rnd], type);
     }
 
     private void makeFloor(Building b, int chunkX, int chunkZ, LimitedRegion region, int yFrom, int yTo, Material material) {
