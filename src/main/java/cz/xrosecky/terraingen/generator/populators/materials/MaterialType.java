@@ -6,4 +6,5 @@ public enum MaterialType {
     WallSecondary,
     Window,
     Pillar,
+    Under
 }

@@ -2,14 +2,16 @@ package cz.xrosecky.terraingen.generator.populators;
 
 import cz.xrosecky.terraingen.data.DataChunk;
 import cz.xrosecky.terraingen.data.DataStorage;
-import cz.xrosecky.terraingen.data.types.LineSegment;
-import cz.xrosecky.terraingen.data.types.StreetSegment;
-import cz.xrosecky.terraingen.data.types.StreetType;
-import cz.xrosecky.terraingen.data.types.Tree;
+import cz.xrosecky.terraingen.data.types.*;
 import cz.xrosecky.terraingen.generator.utils.RandomMaterial;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
@@ -124,6 +126,99 @@ public class StreetPopulator extends BlockPopulator {
                 x += stepX;
                 z += stepZ;
             }
+
+//            if (street.segmentType != SegmentType.MIDDLE && street.name != null && street.name.length() > 0) {
+//                long signX = x1;
+//                long signZ = z1;
+//                long vectX = x2 - x1;
+//                long vectZ = z2 - z1;
+//
+//                if (street.segmentType == SegmentType.END) {
+//                    signX = x2;
+//                    signZ = z2;
+//                    vectX = x1 - x2;
+//                    vectZ = z1 - z2;
+//                }
+//
+//                double len = Math.sqrt(vectX * vectX + vectZ * vectZ);
+//                vectX /= len;
+//                vectZ /= len;
+//
+//                signX += -vectZ * 4;
+//                signZ += vectX * 4;
+//
+//
+//                Location loc = new Location(region.getWorld(), signX, dataChunk.getAlt((int)signX, (int)signZ) + 2, signZ);
+//
+//                if (region.isInRegion(loc)) {
+//
+//                    region.setType(new Location(region.getWorld(), signX, dataChunk.getAlt((int) signX, (int) signZ) + 1, signZ), Material.STONE_BRICK_WALL);
+//
+//                    Sign data = (Sign) Material.OAK_SIGN.createBlockData();
+//                    int angle = (((int) Math.floor((Math.atan2(vectZ, vectX) / Math.PI / 2) * 16 - 0.5) % 16) + 16) % 16;
+//
+//                    switch (angle) {
+//                        case 0:
+//                            data.setRotation(BlockFace.NORTH);
+//                            break;
+//                        case 1:
+//                            data.setRotation(BlockFace.NORTH_NORTH_EAST);
+//                            break;
+//                        case 2:
+//                            data.setRotation(BlockFace.NORTH_EAST);
+//                            break;
+//                        case 3:
+//                            data.setRotation(BlockFace.EAST_NORTH_EAST);
+//                            break;
+//                        case 4:
+//                            data.setRotation(BlockFace.EAST);
+//                            break;
+//                        case 5:
+//                            data.setRotation(BlockFace.EAST_SOUTH_EAST);
+//                            break;
+//                        case 6:
+//                            data.setRotation(BlockFace.SOUTH_EAST);
+//                            break;
+//                        case 7:
+//                            data.setRotation(BlockFace.SOUTH_SOUTH_EAST);
+//                            break;
+//                        case 8:
+//                            data.setRotation(BlockFace.SOUTH);
+//                            break;
+//                        case 9:
+//                            data.setRotation(BlockFace.SOUTH_SOUTH_WEST);
+//                            break;
+//                        case 10:
+//                            data.setRotation(BlockFace.SOUTH_WEST);
+//                            break;
+//                        case 11:
+//                            data.setRotation(BlockFace.WEST_SOUTH_WEST);
+//                            break;
+//                        case 12:
+//                            data.setRotation(BlockFace.WEST);
+//                            break;
+//                        case 13:
+//                            data.setRotation(BlockFace.WEST_NORTH_WEST);
+//                            break;
+//                        case 14:
+//                            data.setRotation(BlockFace.NORTH_WEST);
+//                            break;
+//                        case 15:
+//                            data.setRotation(BlockFace.NORTH_NORTH_WEST);
+//                            break;
+//                    }
+//
+//                    region.setBlockData(loc, data);
+//                    org.bukkit.block.Sign s = (org.bukkit.block.Sign) region.getBlockState(loc);
+//
+//                    String text = street.name;
+//                    int index = 0;
+//                    while (index < text.length()) {
+//                        s.setLine(index / 15, text.substring(index, Math.min(index + 15, text.length())));
+//                        index += 15;
+//                    }
+//                }
+//            }
         }
     }
 }

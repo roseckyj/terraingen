@@ -5,12 +5,15 @@ public class StreetSegment extends LineSegment {
     public final boolean bridge;
     public final boolean tunnel;
     public final String name;
+    public final SegmentType segmentType;
 
-    public StreetSegment(long x1, long z1, long x2, long z2, StreetType type, String name, boolean bridge, boolean tunnel) {
+    public StreetSegment(long x1, long z1, long x2, long z2, StreetType type, String name, boolean bridge, boolean tunnel, SegmentType segmentType) {
         super(x1, z1, x2, z2);
         this.type = type;
         this.name = name;
         this.bridge = bridge;
         this.tunnel = tunnel;
+        this.segmentType = segmentType;
     }
 }
+

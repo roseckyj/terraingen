@@ -11,8 +11,9 @@ public class Building extends AbstractObject {
     public MultiPolygon polygon;
     public MultiPolygon originalPolygon;
     public RoofType roofType;
+    public final long ruian;
 
-    public Building(float height, float alt, float roofHeight, RoofType roofType, MultiPolygon polygon, MultiPolygon originalPolygon) {
+    public Building(long ruian, float height, float alt, float roofHeight, RoofType roofType, MultiPolygon polygon, MultiPolygon originalPolygon) {
         super(Coords.latLonToXZ(new Pointf3D(polygon.getPoint(0))).x, Coords.latLonToXZ(new Pointf3D(polygon.getPoint(0))).z);
         this.height = height;
         this.alt = alt;
@@ -20,5 +21,6 @@ public class Building extends AbstractObject {
         this.roofType = roofType;
         this.polygon = polygon;
         this.originalPolygon = originalPolygon;
+        this.ruian = ruian;
     }
 }

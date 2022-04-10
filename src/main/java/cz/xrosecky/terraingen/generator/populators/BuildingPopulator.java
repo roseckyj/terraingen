@@ -39,7 +39,7 @@ public class BuildingPopulator extends BlockPopulator {
         DataChunk dataChunk = storage.getChunk(chunkX, chunkZ);
         for (Building b : dataChunk.buildings) {
 
-            int minAlt = (int)Math.floor(Coords.normalizeY(b.alt));
+            int minAlt = (int)Math.floor(Coords.normalizeY(b.alt)) + 3;
 
             ArrayList<ArrayList<Pointf2D>> lines = new ArrayList<>();
 
@@ -59,12 +59,13 @@ public class BuildingPopulator extends BlockPopulator {
             }
 
             // the minimal floor height => actual is in the interval <floorHeight, 2 * floorHeight)
-            int floorHeight = 4;
+            int floorHeight = 5;
             int floorCount = (int) Math.floor(b.height / floorHeight);
             int floorRemainder = (int) b.height % floorHeight;
             // the first floor is taller
             int firstFloorHeight = floorHeight + floorRemainder;
             makeFloor(b, chunkX, chunkZ, region, firstFloorHeight, firstFloorHeight, Material.STONE_BRICKS);
+            makeFloor(b, chunkX, chunkZ, region, minAlt - 3, minAlt, Material.STONE_BRICKS);
             // other floors are the same height (do not draw ceiling, it is drawn with the roof)
             for (int floorIndex = 2; floorIndex < floorCount - 1; floorIndex++){
                 int floorY = minAlt + floorIndex * floorHeight;
@@ -96,7 +97,7 @@ public class BuildingPopulator extends BlockPopulator {
 
                         if (dataChunk.isInChunk(currX, currZ)) {
                             for (int y = 0; y <= b.height; y++) {
-                                Material m = determineMaterial(k, y, steps, (int) b.height, random);
+                                Material m = determineMaterial(k, y, steps, (int) b.height, b.ruian);
                                 region.setType(new Location(region.getWorld(), currX, y + minAlt, currZ), m);
                             }
                             if (b.roofType == RoofType.FLAT) {
@@ -114,23 +115,23 @@ public class BuildingPopulator extends BlockPopulator {
             if (b.roofType == RoofType.FLAT) {
                 makeFloor(b, chunkX, chunkZ, region, (int) (minAlt + b.height) + 1, (int) (minAlt + b.height) + 1, Material.STONE_BRICKS);
             } else {
-                makeRoof(b, region, (int) (minAlt + b.height) + 1, Material.OAK_PLANKS, lines, b.height > 40 ? 4 : b.roofHeight > 8 ? 2 : 1);
+                makeRoof(b, region, (int) (minAlt + b.height) + 1, Material.TERRACOTTA, lines, b.height > 40 ? 4 : b.roofHeight > 8 ? 2 : 1);
             }
         }
     }
 
-    private Material determineMaterial(long x, int y, long width, int height, @NotNull Random random) {
+    private Material determineMaterial(long x, int y, long width, int height, long ruian) {
         MaterialType type = MaterialType.None;
 
-        int windowSpacing = 1;
+        int windowSpacing = 0;
 
-        int floorHeight = 4;
+        int floorHeight = 5;
         int floorCount = height / floorHeight;
         int floorRemainder = height % floorHeight;
         long currentFloor = y / floorHeight;
         long indexInFloor = y % floorHeight;
 
-        int regionWidth = 3;
+        int regionWidth = 4;
         int regionBorder = 1;
         long regionCount = width / regionWidth;
         long regionRemainder = width % regionWidth;
@@ -147,9 +148,15 @@ public class BuildingPopulator extends BlockPopulator {
         if (x == 0 || x == width - 1) {
             type = MaterialType.Pillar;
         }
+
+        // pillars
+        else if (indexInRegion == regionWidth - 1) {
+            type = MaterialType.WallPrimary;
+        }
+
         // edge regions (and larger region)
         else if (currentRegion == 0 || currentRegion == regionCount || currentLargerRegion) {
-            type = MaterialType.WallPrimary;
+            type = MaterialType.WallSecondary;
         }
         // window
         else if (currentRegion % (1 + windowSpacing) == windowSpacing &&
@@ -162,7 +169,7 @@ public class BuildingPopulator extends BlockPopulator {
         }
 
         String[] allSchemes = MaterialSchemes.getSchemes();
-        int rnd = random.nextInt(allSchemes.length);
+        int rnd = (((int)(ruian % allSchemes.length) + allSchemes.length) % allSchemes.length);
         return MaterialSchemes.getMaterial(allSchemes[rnd], type);
     }
 

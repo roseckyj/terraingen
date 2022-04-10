@@ -2,6 +2,7 @@ package cz.xrosecky.terraingen.data.loaders;
 
 import cz.xrosecky.terraingen.data.DataStorage;
 import cz.xrosecky.terraingen.data.types.LineSegment;
+import cz.xrosecky.terraingen.data.types.SegmentType;
 import cz.xrosecky.terraingen.data.types.StreetSegment;
 import cz.xrosecky.terraingen.data.types.StreetType;
 import cz.xrosecky.terraingen.utils.*;
@@ -51,7 +52,15 @@ public class StreetLoader extends AbstractLoader {
                         long minZ = Math.min(z1, z2);
                         long maxZ = Math.max(z1, z2);
 
-                        StreetSegment segment = new StreetSegment(x1, z1, x2, z2, type, name, bridge, tunnel);
+                        SegmentType segType = SegmentType.MIDDLE;
+                        if (i == 0) {
+                            segType = SegmentType.START;
+                        }
+                        if (i == geom.numLines() - 1) {
+                            segType = SegmentType.END;
+                        }
+
+                        StreetSegment segment = new StreetSegment(x1, z1, x2, z2, type, name, bridge, tunnel, segType);
 
                         for (int x = (int) Math.floor(minX / 16.0); x <= (int) Math.ceil(maxX / 16.0); x++) {
                             for (int z = (int) Math.floor(minZ / 16.0); z <= (int) Math.ceil(maxZ / 16.0); z++) {
