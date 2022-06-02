@@ -1,5 +1,6 @@
 package cz.xrosecky.terraingen;
 
+import cz.xrosecky.terraingen.commands.BuildingsCommand;
 import cz.xrosecky.terraingen.commands.GotoCommand;
 import cz.xrosecky.terraingen.commands.WhereAmICommand;
 import cz.xrosecky.terraingen.data.DataStorage;
@@ -41,6 +42,7 @@ public final class Terraingen extends JavaPlugin {
 
             this.getCommand("goto").setExecutor(new GotoCommand(this, storage));
             this.getCommand("whereami").setExecutor(new WhereAmICommand(this, storage));
+            this.getCommand("buildings").setExecutor(new BuildingsCommand(this, storage, config));
 
             this.looper = new Loop(this, storage);
             this.getServer().getScheduler().runTaskTimer(this, looper, 0L, 10L);

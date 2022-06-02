@@ -1,6 +1,11 @@
 package cz.xrosecky.terraingen.settings;
 
 import com.google.gson.annotations.SerializedName;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class Configuration {
 
@@ -18,6 +23,9 @@ public class Configuration {
 
     @SerializedName("DBDatabase")
     private String DBDatabase = "geodb";
+
+    @SerializedName("World")
+    private String World = "gen";
 
 
 
@@ -39,5 +47,19 @@ public class Configuration {
 
     public String getDBDatabase() {
         return this.DBDatabase;
+    }
+
+    public World getWorld(@NotNull JavaPlugin plugin) {
+        List<World> worlds = plugin.getServer().getWorlds();
+
+        for(World w : worlds){
+            if (w.getName().equals(World)) {
+                return w;
+            }
+        }
+
+        plugin.getLogger().severe("World '" + World + "' does not exist on the server!");
+
+        return null;
     }
 }

@@ -11,3 +11,7 @@ commands:
     description: Tell the current location of the player in the real world coordinates
     usage: /whereami
     permission: terraingen.whereami
+  buildings:
+    description: Place all the buildings in the world
+    usage: /buildings
+    permission: terraingen.buildings

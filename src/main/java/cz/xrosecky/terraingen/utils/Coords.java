@@ -5,7 +5,9 @@ package cz.xrosecky.terraingen.utils;
 
 public class Coords {
     private static final double EARTH_RADIUS = 6371 * 1000;
-    private static final Pointf2D MAP_CENTER = new Pointf2D(rad(49.195063), rad(16.608272));
+    private static final Pointf2D MAP_CENTER = new Pointf2D(rad(49.2100008), rad(16.5983761)); // FI MUNI
+    // private static final Pointf2D MAP_CENTER = new Pointf2D(rad(49.195063), rad(16.608272)); // Namesti svobody
+    private static final double ROTATION = rad(-22 + 90);
 
     public static int normalizeY(double alt) {
         // Check if this is good
@@ -29,6 +31,12 @@ public class Coords {
         double x = EARTH_RADIUS * Math.cos(lat) * Math.sin(deltaLon);
         double z = EARTH_RADIUS * (Math.cos(MAP_CENTER.lat()) * Math.sin(lat) - Math.sin(MAP_CENTER.lat()) * Math.cos(lat) * Math.cos(deltaLon));
 
+        double x2 = x * Math.cos(ROTATION) - z * Math.sin(ROTATION);
+        double z2 = x * Math.sin(ROTATION) + z * Math.cos(ROTATION);
+
+        x = x2;
+        z = z2;
+
         x *= 1;
         z *= -1;
 
@@ -46,6 +54,12 @@ public class Coords {
     public static Pointf2D XZToLatLon(double x, double z) {
         x *= 1;
         z *= -1;
+
+        double x2 = x * Math.cos(-ROTATION) - z * Math.sin(-ROTATION);
+        double z2 = x * Math.sin(-ROTATION) + z * Math.cos(-ROTATION);
+
+        x = x2;
+        z = z2;
 
         double rho = Math.sqrt(x*x + z*z);
         double c = Math.asin(rho / EARTH_RADIUS);
