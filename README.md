@@ -2,6 +2,8 @@
 
 This is a repository of a project, that takes open Brno data and uses it in order to generate a Minecraft map of Brno city
 
+![screenshot](./static/screenshot.png)
+
 ## Usage
 
 This is a plugin for a Paper 1.18 server.
